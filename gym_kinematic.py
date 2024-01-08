@@ -8,11 +8,11 @@ class SailEnv(gym.Env):
         self.ts = 0.1
         # 初始状态
         self.psi = np.pi / 3
-        self.x = 5
-        self.y = 5
+        self.x = 25
+        self.y = 25
         
         self.u = 1
-        self.ak = 0
+        self.ak = np.pi / 4
 
         # 帆船的固定参数
 
@@ -32,8 +32,8 @@ class SailEnv(gym.Env):
         self.action_space = spaces.Box(low=self.min_action, high=self.max_action, shape=(1,), dtype=np.float32)
         
         self.min_x = -2
-        self.max_ye = 20.
-        self.min_ye = -20.
+        self.max_ye = 40.
+        self.min_ye = -40.
         self.min_psi_ak = -np.pi
         self.max_psi_ak = np.pi
         self.low_state = np.array( \
@@ -44,11 +44,13 @@ class SailEnv(gym.Env):
             low=self.low_state, high=self.high_state, dtype=np.float32)
 
 
-    def step(self, action):
+    def step(self,action):
         ye = self.state[0]
         action = action[0]
 
-        psid = self.ak  + action   # Los控制器
+        # action = -np.arctan(ye / self.Delta)
+
+        psid = self.ak  + action   # Los控制器  调整 路径的角度来实现斜线的跟踪
 
         if psid > np.pi:                            
             psid = psid - 2 * np.pi  
@@ -113,8 +115,8 @@ class SailEnv(gym.Env):
 
         """
         action = 0
-        x = 5  # 初始x值的位置
-        y = 5  # 初始y值的位置
+        x = 0  # 初始x值的位置
+        y = 25  # 初始y值的位置
         psi = np.pi / 3  # 初始psi值
 
         self.x = x
@@ -129,7 +131,7 @@ class SailEnv(gym.Env):
         self.x_0 = x_0
         self.y_0 = y_0
 
-        self.ak = 0.
+        self.ak = np.pi / 4
 
         psi_ak = self.psi - self.ak
         if psi_ak > np.pi:
